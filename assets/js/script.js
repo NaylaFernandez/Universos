@@ -39,3 +39,26 @@ $(document).ready(function () {
         }, ]
     });
 });
+
+(function() {
+  const home = document.getElementById('home')
+  const navbar = document.getElementById('navbar');
+  [home, navbar].forEach(element => {
+    element.addEventListener('mousemove', (e) => {
+      window.realMouseX = e.pageX;
+      window.realMouseY = e.pageY;
+    });
+  });
+  
+})();
+
+// (function () {
+//   let sketch = function(p) {
+//     p.setup = function(){
+//       p.createCanvas(p.windowWidth, p.windowHeight);
+//       p.background(0);
+//     }
+//   };
+  
+//   new p5(sketch, 'canvas');
+// })()
