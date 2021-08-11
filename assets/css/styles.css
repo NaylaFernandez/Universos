@@ -1,11 +1,3 @@
-.name{
-    color: white;
-    margin-bottom: 16px;
-}
-
-.center{
-    justify-content: center;
-}
 .canvas {
   position: absolute;
   top: 0;

@@ -10,11 +10,12 @@
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css" />
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <script src="assets/js/processing.js"></script>
 </head>
 
 <body class="bg-black muli">
-    <nav class="w-100pc flex flex-column md-flex-row md-px-10 py-5 bg-black">
+    <nav id="navbar" class="w-100pc flex flex-column md-flex-row md-px-10 py-5">
         <div class="flex justify-between">
             <a href="#" class="flex items-center p-2 mr-4 no-underline">
                 <img class="max-h-l2 w-auto" src="assets/images/logo.png" />
@@ -34,6 +35,149 @@
 
     <!-- hero section -->
     <section id="home" class="min-h-100vh flex justify-start items-center">
+        <div id="canvas" class="canvas">
+            <script>
+                window.realMouseX = 0;
+                window.realMouseY = 0;
+            </script>
+            <script type="text/processing">
+                class Particle {
+                    int x, y;        
+                    float vx, vy;    
+                    float slowLevel;
+                     
+                   
+                    Particle() {
+                      x = (int)random(width);
+                      y = (int)random(height);
+                      slowLevel = random(100) + 5;
+                    }
+                   
+                    void move(float targetX, float targetY) {
+                      vx = (targetX - x) ;
+                      vy = (targetY - y) ;
+                   
+                      x = (int)(x + vx);
+                      y = (int)(y + vy);
+                    }
+                  }
+                  Particle p = new Particle();
+ 
+
+                    final int LIGHT_FORCE_RATIO = 5;  
+                    final int  LIGHT_DISTANCE= 75 * 75;  
+                    final int  BORDER = 400;  
+                    float baseRed, baseGreen, baseBlue;  
+                    float baseRedAdd, baseGreenAdd, baseBlueAdd;  
+                    final float RED_ADD = 1.2;   
+                    final float GREEN_ADD = 1.7;  
+                    final float BLUE_ADD = 2.3;  
+                    
+                    void setup() {
+                    background(0);
+                    size(window.innerWidth, window.innerHeight);
+                    noCursor();
+                    baseRed = 255;
+                    baseRedAdd = RED_ADD;
+                    
+                    baseGreen = 0;
+                    baseGreenAdd = GREEN_ADD;
+                    
+                    baseBlue = 0;
+                    baseBlueAdd = BLUE_ADD;
+                    }
+                    
+                    void draw() {
+                        if(realMouseX === 0 && realMouseY === 0) return;
+                    
+                    baseRed += baseRedAdd;
+                    baseBlue += baseBlueAdd;
+                    
+                    colorOutCheck();
+                    
+                    p.move(realMouseX, realMouseY);
+                    
+                    
+                    int tRed = (int)baseRed;
+                    int tGreen = (int)baseGreen;
+                    int tBlue = (int)baseBlue;
+                    
+                    tRed *= tRed;
+                    tGreen *= tGreen;
+                    tBlue *= tBlue;
+                    
+                    
+                    loadPixels();
+                    
+                        int left = max(0, p.x - BORDER);
+                        int right = min(width, p.x + BORDER);
+                        int top = max(0, p.y - BORDER);
+                        int bottom = min(height, p.y + BORDER);
+                    
+                    
+                        for (int y = top; y < bottom; y++) {
+                        for (int x = left; x < right; x++) {
+                            int pixelIndex = x + y * width;
+                    
+                            int r = pixels[pixelIndex] >> 16 & 0xFF;
+                            int g = pixels[pixelIndex] >> 8 & 0xFF;
+                            int b = pixels[pixelIndex] & 0xFF;
+                    
+                        
+                            int dx = x - p.x;
+                            int dy = y - p.y;
+                            int distance = (dx * dx) + (dy * dy);  
+                    
+                        
+                            if (distance < LIGHT_DISTANCE) {
+                            int fixFistance = distance * LIGHT_FORCE_RATIO;
+                            
+                            if (fixFistance == 0) {
+                                fixFistance = 1;
+                            }   
+                            r = r + tRed / fixFistance;
+                            g = g + tGreen / fixFistance;
+                            b = b + tBlue / fixFistance;
+                            }
+                            pixels[x + y * width] = color(r, g, b);
+                        }
+                        }
+                    
+                    updatePixels();
+                    }
+                    
+
+                    void colorOutCheck() {
+                    if (baseRed < 10) {
+                        baseRed = 10;
+                        baseRedAdd *= -1;
+                    }
+                    else if (baseRed > 255) {
+                        baseRed = 255;
+                        baseRedAdd *= -1;
+                    }
+                    
+                    if (baseGreen < 10) {
+                        baseGreen = 10;
+                        baseGreenAdd *= -1;
+                    }
+                    else if (baseGreen > 255) {
+                        baseGreen = 255;
+                        baseGreenAdd *= -1;
+                    }
+                    
+                    if (baseBlue < 10) {
+                        baseBlue = 10;
+                        baseBlueAdd *= -1;
+                    }
+                    else if (baseBlue > 255) {
+                        baseBlue = 255;
+                        baseBlueAdd *= -1;
+                    }
+                    }
+              </script>
+            <canvas></canvas>
+        </div>
         <div class="mx-5 md-mx-l5">
             <div>
                 <h1 class="white fs-l3 lh-2 md-fs-xl1 md-lh-1 fw-900 ">Serve Your <br />Website Fast</h1>
@@ -429,6 +573,8 @@
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15.0.0/dist/smooth-scroll.polyfills.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js" integrity="sha512-N4kV7GkNv7QR7RX9YF/olywyIgIwNvfEe2nZtfyj73HdjCUkAfOBDbcuJ/cTaN04JKRnw1YG1wnUyNKMsNgg3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+
     <script src="assets/js/script.js"></script>
 </body>
 
